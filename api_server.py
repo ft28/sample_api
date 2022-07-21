@@ -7,10 +7,15 @@ from urllib.parse import urlparse, parse_qs
 import json
 
 HOST = '0.0.0.0'
-PORT = os.environ.get('SIMPLE_API_PORT', 8082)
+PORT = int(os.environ.get('SIMPLE_API_PORT', '8082'))
 
 
 def get_ans(calc_type, params):
+
+
+    if calc_type == '/health':
+        return 'OK'
+
     param_x = params["x"]
     param_y = params["y"]
 
@@ -36,7 +41,7 @@ class APIHandler(BaseHTTPRequestHandler):
             params = {k: int(v[0]) for k, v in parse_qs(parsed_url.query).items()}
             ans = get_ans(calc_type, params)
             response = {
-                'query': self.path,
+                'query': parsed_url.path,
                 'response': ans
             }
             self.write_response(200, response)
